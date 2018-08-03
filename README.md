@@ -71,9 +71,15 @@ CREATE TABLE message
 
 ## CHANGELOG
 
+#### 0.0.2 - 2018/08/03
+
+- Client: Use of `onConnect` handler to reconnect after connection is lost. Should significantly improve overall uptime.
+
+
 #### 0.0.1 - 2018/05/07
 
 - Initial release
+
 
 ## License
 
