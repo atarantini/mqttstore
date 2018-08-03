@@ -25,7 +25,14 @@ func Start(mqttServer string, mqttServerPort string, mqttTopic string, mqttClien
 	opts := mqtt.NewClientOptions().AddBroker("tcp://" + fmt.Sprintf("%s:%s", mqttServer, mqttServerPort))
 	opts.SetClientID(mqttClientID)
 	opts.SetAutoReconnect(true)
+	opts.SetConnectionLostHandler(connLostHandler)
 	opts.SetDefaultPublishHandler(mqttMessageHandler) // This handler will send messages to store.Channel
+	opts.OnConnect = func(c mqtt.Client) {
+		// Connection OK, subscribe to topic
+		log.Println("mqtt.topic:", mqttTopic)
+		c.Subscribe(mqttTopic, 0, nil)
+		log.Println("mqtt.client: ignoring_retained_messages (this can take a long time depending on your broker stored retained messages)")
+	}
 
 	//
 	// Create client and connect to server
@@ -36,11 +43,6 @@ func Start(mqttServer string, mqttServerPort string, mqttTopic string, mqttClien
 	if token := c.Connect(); token.Wait() && token.Error() != nil {
 		log.Fatalln("mqtt.error:", token.Error())
 		os.Exit(100)
-	} else {
-		// Connection OK, subscribe to topic
-		log.Println("mqtt.topic:", mqttTopic)
-		c.Subscribe(mqttTopic, 0, nil)
-		log.Println("mqtt.client: ignoring_retained_messages (this can take a long time depending on your broker stored retained messages)")
 	}
 
 	//
@@ -66,6 +68,11 @@ var mqttMessageHandler mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.M
 
 	// Increment stats total counter
 	statsMessagesTotal++
+}
+
+// Connection lost, print error
+func connLostHandler(c mqtt.Client, err error) {
+	log.Println(fmt.Sprintf("mqtt.error.connection_lost: %v", err))
 }
 
 // Print stats
