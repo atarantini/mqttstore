@@ -7,7 +7,7 @@ Store MQTT messages into MySQL database
 Run it from console:
 
 ```bash
-$ mqttstore -dsn testuser:testpass1234@/mqtt_test -host iot.eclipse.org -topic test/#
+$ mqttstore -dsn testuser:testpass1234@/mqtt_test -host test.mosquitto.org -topic test/#
 ```
 
 The command above will try to connect to local database, then try to connect to MQTT broker and print stats about stored messages:
@@ -45,6 +45,12 @@ Usage of mqttstore:
 
   -topic string
         MQTT topic (default "#")
+
+  -username string
+        MQTT username (default "", no username)
+
+  -password string
+        MQTT password (default "", no password)
 ```
 
 ## Installation
@@ -71,9 +77,14 @@ CREATE TABLE message
 
 ## CHANGELOG
 
+#### 0.1.0 - 2021/07/26
+
+- MQTT Client: Support for MQTT username and password.
+- CLI: Changed random unique ID generation if no MQTT client is specified.
+
 #### 0.0.2 - 2018/08/03
 
-- Client: Use of `onConnect` handler to reconnect after connection is lost. Should significantly improve overall uptime.
+- MQTT Client: Use of `onConnect` handler to reconnect after connection is lost. Should significantly improve overall uptime.
 
 
 #### 0.0.1 - 2018/05/07

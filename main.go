@@ -7,10 +7,9 @@ import (
 	"flag"
 	"log"
 
-	"github.com/satori/go.uuid"
-
 	"github.com/atarantini/mqttstore/client"
 	"github.com/atarantini/mqttstore/storage"
+	"github.com/segmentio/ksuid"
 )
 
 var dsn string
@@ -18,6 +17,8 @@ var mqttServer string
 var mqttServerPort string
 var mqttTopic string
 var mqttClientID string
+var mqttUsername string
+var mqttPassword string
 
 // Command line arguments constants
 const claDefaultDsn = "test:test@/mqtt"
@@ -28,9 +29,11 @@ func main() {
 	flag.StringVar(&mqttServer, "host", "iot.eclipse.org", "MQTT server hostname or IP address")
 	flag.StringVar(&mqttServerPort, "port", "1883", "MQTT server port")
 	flag.StringVar(&mqttTopic, "topic", "#", "MQTT topic")
-	uuid, _ := uuid.NewV4()
+	uuid := ksuid.New()
 	clientID := uuid.String()
 	flag.StringVar(&mqttClientID, "clientid", clientID, "MQTT Client ID")
+	flag.StringVar(&mqttUsername, "username", "", "MQTT username")
+	flag.StringVar(&mqttPassword, "password", "", "MQTT password")
     flag.Parse()
 
 	// Connect to DB
@@ -40,7 +43,7 @@ func main() {
 		log.Fatalln("db.error:", err)
 	}
 
-	client.Start(mqttServer, mqttServerPort, mqttTopic, mqttClientID, &store)
+	client.Start(mqttServer, mqttServerPort, mqttTopic, mqttClientID, mqttUsername,  mqttPassword, &store)
 
 	// Block forever (until signal or CTRL+C)
 	select {}

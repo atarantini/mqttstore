@@ -18,7 +18,7 @@ var statsIntervalSeconds = 10
 var statsMessagesTotal = 0
 
 // Start MQTT client by connecting to server, subscribe into a topic and save messages
-func Start(mqttServer string, mqttServerPort string, mqttTopic string, mqttClientID string, storage *storage.Storage) {
+func Start(mqttServer string, mqttServerPort string, mqttTopic string, mqttClientID string, mqttUsername string, mqttPassword string, storage *storage.Storage) {
 	store = storage
 
 	// Set MQTT client options
@@ -27,6 +27,8 @@ func Start(mqttServer string, mqttServerPort string, mqttTopic string, mqttClien
 	opts.SetAutoReconnect(true)
 	opts.SetConnectionLostHandler(connLostHandler)
 	opts.SetDefaultPublishHandler(mqttMessageHandler) // This handler will send messages to store.Channel
+	opts.SetUsername(mqttUsername)
+	opts.SetPassword(mqttPassword)
 	opts.OnConnect = func(c mqtt.Client) {
 		// Connection OK, subscribe to topic
 		log.Println("mqtt.topic:", mqttTopic)
